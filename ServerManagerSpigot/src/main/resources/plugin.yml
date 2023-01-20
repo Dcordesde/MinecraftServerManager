@@ -1,0 +1,4 @@
+name: ServerManagerSpigot
+version: '${project.version}'
+main: de.david.servermanagerspigot.Main
+api-version: 1.19
