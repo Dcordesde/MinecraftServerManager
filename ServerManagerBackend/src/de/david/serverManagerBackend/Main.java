@@ -19,6 +19,7 @@ public class Main {
     public static void main(String[] args) {
 
 
+
         //config = de.david.serverManager.Config.loadConfig();
         //gson = de.david.serverManager.Config.loadgson();
         //de.david.serverManager.Config.saveConfig(config);
