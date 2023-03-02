@@ -1,5 +1,7 @@
 package de.david.serverManagerBackend.handler;
 
+import de.david.serverManagerBackend.Main;
+
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -19,7 +21,7 @@ public class FilesHandler {
             printWriter.close();
             try {
                 Runtime.getRuntime().exec("chmod +x " + file);
-                System.out.println("Startfile wurde beschrieben");
+                System.out.println("[" + Main.getTime() + " Info]: Startfile wurde beschrieben");
                 return true;
             } catch (IOException e) {
                 e.printStackTrace();
@@ -49,7 +51,7 @@ public class FilesHandler {
                     return false;
                 }
             }
-            System.out.println(fileCallingName + " wurde beschrieben");
+            System.out.println("[" + Main.getTime() + " Info]: " + fileCallingName + " wurde beschrieben");
             return true;
         } catch (IOException e) {
             e.printStackTrace();

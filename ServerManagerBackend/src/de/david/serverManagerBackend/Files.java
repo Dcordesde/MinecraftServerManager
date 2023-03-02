@@ -11,6 +11,9 @@ public class Files {
     private static File json_file;
     private static ArrayList<ServerObject> servObjList;
 
+    private static File errorLogFile;
+    private static ArrayList<String> errors;
+
     public static boolean createDefaultJson(){
         json_file = new File("./serverManager-servers.json");
         if(!json_file.exists()){
@@ -70,16 +73,16 @@ public class Files {
                         gson.toJson(Main.getServerList(), writer);
                         writer.flush();
                         writer.close();
-                        System.out.println("Json File Saved");
+                        System.out.println("[" + Main.getTime() + " Info]: Json File wurde gespeichert");
                         return true;
                     }
                     else {
-                        System.out.println("Die serverManager-servers.json konnte nicht Beschrieben werden");
+                        System.out.println("[" + Main.getTime() + " Error]: Die serverManager-servers.json konnte nicht Beschrieben werden");
                         return false;
                     }
                 }
                 else {
-                    System.out.println("Die serverManager-servers.json konnte nicht Beschrieben werden");
+                    System.out.println("[" + Main.getTime() + " Error]: Die serverManager-servers.json konnte nicht Beschrieben werden");
                     return false;
                 }
             } catch (IOException e) {
@@ -88,4 +91,55 @@ public class Files {
         }
         else return false;
     }
+
+
+    public static boolean createLogFile(){
+        errorLogFile = new File("./ErrorLog.txt");
+        try {
+            if (errorLogFile.createNewFile()) {
+                FileWriter fileWriter = new FileWriter(errorLogFile);
+                PrintWriter printWriter = new PrintWriter(fileWriter);
+                //printWriter.println(""); //TODO:
+                printWriter.close();
+                //System.out.println("[" + Main.getTime() + " Info]: Errorlog.txt wurde erstellt"); //TODO: Nachrichten
+                return true;
+            }
+            else return false;
+        } catch(IOException e){
+            errorLogFile = null;
+            throw new RuntimeException(e);
+        }
+    }
+    public static boolean saveLogFile(ArrayList<String> newErrors){
+        errorLogFile = new File("./ErrorLog.txt");
+        if(errorLogFile.exists()) {
+            if(newErrors != null) {
+                try {
+                    FileWriter fileWriter = new FileWriter(errorLogFile);
+                    PrintWriter printWriter = new PrintWriter(fileWriter);
+                    for (String s : newErrors) {
+                        printWriter.write(s);
+                    }
+                    printWriter.close();
+                    System.out.println("[" + Main.getTime() + " Info]: Die Fehlermeldung wurde in die ErrorLog.txt geschrieben");
+                    return true;
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            return false;
+        }
+        errors = null;
+        return false;
+    }
+
+
+    public static boolean addErrorLine(String s){
+        if(!s.equals("") && errors != null){
+            errors.add(s);
+            return saveLogFile(errors);
+        }
+        return false;
+    }
+
 }

@@ -4,15 +4,9 @@ import de.david.serverManagerBackend.handler.BuildtoolsHandler;
 import de.david.serverManagerBackend.handler.ConsoleHandler;
 import de.david.serverManagerBackend.handler.SpigotHandler;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.sql.Time;
-import java.time.LocalDate;
+import java.time.*;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Scanner;
 
 public class Main {
@@ -22,12 +16,13 @@ public class Main {
     private static boolean loop;
     private static boolean runningProcess;
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
 
 
         //config = de.david.serverManager.Config.loadConfig();
         //gson = de.david.serverManager.Config.loadgson();
         //de.david.serverManager.Config.saveConfig(config);
+        Files.createLogFile();
         servObjList = Files.loadJson();
 
         /*System.out.println("Waiting for Client");
@@ -45,7 +40,7 @@ public class Main {
         System.out.println("install test2 test2 spigot/test2/ 1.19.3 spigot 25566 1G");
         sendWaitingMessage();
         while (loop){
-
+            //System.out.println(LocalDateTime.now());
             String line = scn.nextLine();
             String[] words = line.split(" ");
             //System.out.println(words[0] +" "+ words[1] +" "+ words[2]);
@@ -60,20 +55,24 @@ public class Main {
                 case "install" -> {
                     //System.out.println("install");
                     if(words.length == 8) {
-                        System.out.println(LocalDate.now().toString());
-                        if (!BuildtoolsHandler.startBuildtools(words[1], words[2],
+                        /*DateTimeFormatter dtformat = DateTimeFormatter.ofPattern("HH:mm:ss");
+                        ZonedDateTime time = Instant.now().atZone(ZoneId.of("Europe/Berlin"));
+                        System.out.println(time.format(dtformat));*/
+                        runInstallMethods(words);
+                       /* if (!BuildtoolsHandler.startBuildtools(words[1], words[2],
                                 words[3], words[4], words[5],
                                 words[6], words[7], LocalDate.now().toString())) {
                             loop = false;
                             // install test2 test2 spigot/test2/ 1.19.3 spigot 25565 1G
-                        }
+                        }*/
                         //System.out.println(words[1]+ words[2]+
                         //        words[3]+ words[4]+ words[5]+ words[6]);
                     }
                     else {
+                        /*System.out.println("DEin befehl :")
                         for(String s : words){
                             System.out.println(s);
-                        }
+                        }*/
                         System.out.println("Use: install [name] [screenName] [path (´spigot/test2/´)] [version (´1.19.3´)] [type (´spigot´)] [port (´25565´)] [ram (´2G´)]");
                     }
 
@@ -105,8 +104,44 @@ public class Main {
         }
     }
 
+    private static void runInstallMethods(String[] words){
+        // install test2 test2 spigot/test2/ 1.19.3 spigot 25565 1G
+        if(words[5].equalsIgnoreCase("spigot")){
+            Runnable rn = () -> {
+                System.out.println("[" + Main.getTime() + " Debug]: Install Spigot Thread Id: " + Thread.currentThread().getId());
+                if (!BuildtoolsHandler.startBuildtools(words[1], words[2],
+                        words[3], words[4], words[5],
+                        words[6], words[7], LocalDate.now().toString())) {
+                    loop = false;
+
+                }
+                if (!SpigotHandler.installSpigotServer(words[1], words[2],
+                        words[3], words[4], words[5],
+                        words[6], words[7], LocalDate.now().toString())) {
+                    loop = false;
+                    // install test2 test2 spigot/test2/ 1.19.3 spigot 25565 1G
+                }
+                Main.setRunningProcess(false);
+                Main.sendWaitingMessage();
+            };
+            Thread installSpigot = new Thread(rn);
+            //System.out.println("Beta");
+            installSpigot.start();
+            Main.setRunningProcess(true);
+        }
+        else System.out.println("Use: install [name] [screenName] [path (´spigot/test2/´)] [version (´1.19.3´)] [type (´spigot´)] [port (´25565´)] [ram (´2G´)]");
+
+    }
+
+
+    public static String getTime(){
+        DateTimeFormatter dtformat = DateTimeFormatter.ofPattern("HH:mm:ss");
+        ZonedDateTime time = Instant.now().atZone(ZoneId.of("Europe/Berlin"));
+        return time.format(dtformat);
+    }
+
     public static void sendWaitingMessage(){
-        System.out.println("Waiting for Input... (/help)");
+        System.out.println("[" + Main.getTime() + " Info]: Waiting for Input... (/help)");
     }
 
     public static ArrayList<ServerObject> getServerList() {
