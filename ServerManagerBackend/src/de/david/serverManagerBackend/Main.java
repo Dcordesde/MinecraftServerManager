@@ -108,6 +108,7 @@ public class Main {
     private static void runInstallMethods(String[] words){
         // install test2 test2 spigot/test2/ 1.19.3 spigot 25565 1G
         if(words[5].equalsIgnoreCase("spigot")){
+            //if(words[6].)
             Runnable rn = () -> {
                 System.out.println("[" + Main.getTime() + " Debug]: Install Spigot Thread Id: " + Thread.currentThread().getId());
                 if (!BuildtoolsHandler.startBuildtools(words[1], words[2],
